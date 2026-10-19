@@ -25,3 +25,10 @@ The trade-off: this is a parser, not a full timezone database. It produces fixed
 - A trailing `Z` (as in `+0530Z`) is accepted and ignored; only the numeric offset matters.
 - `-00:00` is treated as zero offset, matching ISO 8601 semantics.
 - Hours above 23 are not separately rejected — Python's `datetime.timezone` itself rejects offsets outside ±24 hours, so such inputs surface as a `ValueError` from the standard library.
+
+## Design notes
+
+The window stores values eagerly rather than keeping running aggregates. Running
+sums drift with floating point over long streams, and recomputing from a small
+buffer is cheap enough that the drift is not worth the speed.
+
